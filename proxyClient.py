@@ -1,5 +1,7 @@
 import httpSocketClient
 import socket
+from threading import *
+import time
 
 import shared
 
@@ -11,6 +13,21 @@ BUFFERSIZE = 4096
 client = httpSocketClient.HttpSocketClient(REMOTE)
 
 client.connect()
+
+
+def loop_local_to_remote(local_sock, host):
+    while True:
+        data = local_sock.recv(BUFFERSIZE)
+        print("\n\n\n\n\nLOCAL_TO_REMOTE: " + str(data))
+        client.send(shared.encrypt_and_encode(host, data))
+
+
+def loop_remote_to_local(local_sock, host):
+    while True:
+        data = shared.str_to_bytes(client.receive())
+        print("\n\n\n\n\nREMOTE_TO_LOCAL: " + str(data))
+        local_sock.send(data)
+
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     while True:
@@ -38,21 +55,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
     print("Responded")
 
+    Thread(target=loop_local_to_remote, args=(conn, host)).start()
+    Thread(target=loop_remote_to_local, args=(conn, host)).start()
+
     while True:
-        data = conn.recv(BUFFERSIZE)
-
-        print("Got data back: " + str(data))
-
-        # now send this over to be echoed
-
-        client.send(shared.encrypt_and_encode(host, data))
-
-        resp = shared.decrypt_and_decode_reply(client.receive())
-
-        print("---------------------------------------------------")
-
-        print("Got resp back: " + str(resp))
-
-        conn.send(resp)
-
-        print("Sent resp, waiting")
+        time.sleep(1)

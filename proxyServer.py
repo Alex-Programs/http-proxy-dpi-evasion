@@ -10,8 +10,9 @@ def new_client(headers):
     data, host = shared.decrypt_and_decode(server.receive(_id))
 
     print(str(host))
-    HOST = "ifconfig.me"
-    PORT = 443
+
+    HOST = host.split(":")[0]
+    PORT = int(host.split(":")[1])
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
