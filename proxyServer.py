@@ -16,6 +16,7 @@ def new_client(headers):
     received = server.receive(_id)
     if received == "TIMEOUT":
         return
+
     data, host = shared.decrypt_and_decode(received)
 
     HOST = host.split(":")[0]

@@ -107,7 +107,7 @@ class HttpSocketServer():
             else:
                 time.sleep(0.01)
 
-            if (time.time() - startTime) > 10:
+            if (time.time() - startTime) > 300:
                 return "TIMEOUT"
 
     def rmclient(self, _id):
