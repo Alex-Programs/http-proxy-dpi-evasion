@@ -94,7 +94,7 @@ class HttpSocketServer():
 
             if lowestElement:
                 self.recvBuffs.remove(lowestElement)
-                return lowestElement
+                return lowestElement.data
 
             else:
                 time.sleep(0.01)
