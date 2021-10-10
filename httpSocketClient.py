@@ -11,7 +11,6 @@ class ReceiveItem():
     data: str
 
 def generate_client_id():
-    return "TEST-ID-THING"
     output = ""
     for i in range(1, 5):
         output += str(choice(range(100 * 10000, 999 * 10000))) + ":"
@@ -57,15 +56,20 @@ class HttpSocketClient():
                     lowestOrder = item.order
 
             if lowest:
-                print(str(self.receivedData))
                 self.receivedData.remove(lowest)
                 return lowest.data
 
             time.sleep(0.01)
 
+    def connect(self):
+        r = requests.post("http://" + self.remote + "/connect", headers={
+            "clientid" : self.clientID
+        })
+
 if __name__ == "__main__":
     client = HttpSocketClient("127.0.0.1:1082")
 
+    client.connect()
     client.send("Hello")
 
     print(str(client.receive()))

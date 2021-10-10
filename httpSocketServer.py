@@ -20,7 +20,9 @@ class ReceiveItem():
     order: int
 
 class HttpSocketServer():
-    def __init__(self, host, port):
+    def __init__(self, host, port, connectCallback):
+        self.connectCallback = connectCallback
+
         self.app = Flask(__name__)
         self.clients = []
 
@@ -36,6 +38,11 @@ class HttpSocketServer():
             #TODO clientid, data should be in the encrypted segment
             self.recvBuffs.append(ReceiveItem(request.headers["clientid"], request.get_data(), int(request.headers["order"])))
             return "200", 200
+
+        @self.app.route("/connect", methods=["POST"])
+        def connect():
+            Thread(target=self.connectCallback, args=(dict(request.headers),)).start()
+            return "OK-maybe, this is a huge bodge", 200
 
         @self.app.route("/receive", methods=["GET"])
         def route_send_data():
@@ -93,7 +100,9 @@ class HttpSocketServer():
                 time.sleep(0.01)
 
 if __name__ == "__main__":
-    server = HttpSocketServer("0.0.0.0", 1082)
-    print("PAST")
-    print(str(server.receive("TEST-ID-THING")))
-    server.send("TEST-ID-THING", "this is a response test")
+    def new_client(headers):
+        print("Client func running")
+        print(str(server.receive(headers["Clientid"])))
+        server.send(headers["Clientid"], "this is a response test")
+
+    server = HttpSocketServer("0.0.0.0", 1082, new_client)
