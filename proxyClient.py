@@ -45,8 +45,6 @@ def handle_conn(conn):
 
     initial_data = conn.recv(BUFFERSIZE)
 
-    print(str(initial_data))
-
     initial_data = initial_data.decode("utf8")
 
     host = initial_data.split(" ")[1]
