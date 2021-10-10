@@ -34,6 +34,10 @@ def loop_remote_to_local(local_sock, client):
             print("CONNECTION RESET")
             return
 
+        except BrokenPipeError:
+            print("BROKEN PIPE")
+            return
+
 def handle_conn(conn):
     client = httpSocketClient.HttpSocketClient(REMOTE)
 
@@ -45,13 +49,9 @@ def handle_conn(conn):
 
     initial_data = initial_data.decode("utf8")
 
-    print(str(initial_data))
-
     host = initial_data.split(" ")[1]
 
     conn.send("HTTP/1.1 200 OK\n\n".encode("utf8"))
-
-    print("Responded")
 
     Thread(target=loop_local_to_remote, args=(conn, host, client)).start()
     Thread(target=loop_remote_to_local, args=(conn, client)).start()

@@ -20,25 +20,21 @@ def new_client(headers):
         s.connect((HOST, PORT))
 
         def outwards_proxy(_id, s):
-            print("Outwards proxy started")
             while True:
                 data, host = shared.decrypt_and_decode(server.receive(_id))
                 if len(data) == 0:
                     print("ERR: DATA TO SHORT: ABORT")
                     break
 
-                print("Sending data from client to remote: " + str(data))
                 s.send(data)
 
         def inwards_proxy(_id, s):
-            print("Inwards proxy started")
             while True:
                 resp = s.recv(BUFFERSIZE)
                 if len(resp) == 0:
                     print("ERR: DATA TO SHORT: ABORT")
                     break
 
-                print("Sending data from remote to client: " + str(resp))
                 server.send(_id, shared.encrypt_and_encode_reply(resp))
 
         Thread(target=inwards_proxy, args=(_id, s)).start()

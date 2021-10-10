@@ -6,6 +6,7 @@ from flask import Flask, request
 from dataclasses import dataclass
 import time
 from threading import *
+from waitress import serve
 
 @dataclass()
 class SendItem():
@@ -73,6 +74,7 @@ class HttpSocketServer():
         Thread(target=self.run).start()
 
     def run(self):
+        #serve(self.app, host=self.host, port=self.port)
         self.app.run(host=self.host, port=self.port, threaded=True)
 
     def send(self, clientid, data):
