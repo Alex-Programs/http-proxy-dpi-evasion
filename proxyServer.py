@@ -78,4 +78,4 @@ def new_client(headers):
                 break
 
 
-server = httpSocketServer.HttpSocketServer("0.0.0.0", 1082, new_client)
+server = httpSocketServer.HttpSocketServer("0.0.0.0", 1081, new_client)

@@ -5,7 +5,7 @@ import time
 
 import shared
 
-REMOTE = "127.0.0.1:1082"
+REMOTE = "127.0.0.1:1081"
 HOST = "0.0.0.0"
 PORT = 1085
 BUFFERSIZE = 4096

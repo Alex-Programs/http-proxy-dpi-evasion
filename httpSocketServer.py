@@ -2,7 +2,7 @@
 # Sending is simple: Send to a endpoint.
 # Receiving: Request from an endpoint. It'll slow poll for max x seconds until it either returns data or tells you to rerun the req
 
-from flask import Flask, request
+from flask import Flask, request, Response
 from dataclasses import dataclass
 import time
 from threading import *
@@ -69,7 +69,9 @@ class HttpSocketServer():
 
                 if lowest:
                     self.sendBuffs.remove(lowest)
-                    return lowest.data
+                    resp = Response(lowest.data)
+                    resp.headers["queue-size"] = len(self.sendBuffs)
+                    resp.headers["order"] = lowestAmount
 
                 if (time.time() - starttime) > 10:
                     return "RESEND", 512
@@ -92,6 +94,8 @@ class HttpSocketServer():
 
     def receive(self, clientid):
         startTime = time.time()
+
+        print("R" + str(len(self.recvBuffs)))
         while True:
             lowestIndex = 9999999999999
             lowestElement = None

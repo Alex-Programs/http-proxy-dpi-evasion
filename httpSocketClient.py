@@ -24,6 +24,7 @@ class HttpSocketClient():
         self.clientID = generate_client_id()
         self.remote = remote_host
         self.receivedData = []
+        self.recvQueueSize = 0
         Thread(target=self.receive_loop).start()
 
     def send(self, data):
@@ -33,18 +34,20 @@ class HttpSocketClient():
             "order": str(self.sendOrder)
         }, data=data)
 
+    def receive_req(self):
+        r = requests.get("http://" + self.remote + "/receive", headers={
+            "clientid": self.clientID
+        }, timeout=15)
+
+        if r.status_code == 200:
+            self.recvQueueSize = int(r.headers["queue-size"])
+            self.receivedData.append(ReceiveItem(int(r.headers["order"]), r.content))
+
     def receive_loop(self):
-        receiveOrder = 0
-
         while True:
-            r = requests.get("http://" + self.remote + "/receive", headers={
-                "clientid": self.clientID
-            }, timeout=15)
+            Thread(target=self.receive_req).start()
 
-            if r.status_code == 200:
-                receiveOrder += 1
-
-                self.receivedData.append(ReceiveItem(receiveOrder, r.content))
+            time.sleep(0.5)
 
     def receive(self):
         while True:
@@ -67,7 +70,7 @@ class HttpSocketClient():
         })
 
 if __name__ == "__main__":
-    client = HttpSocketClient("127.0.0.1:1082")
+    client = HttpSocketClient("127.0.0.1:1081")
 
     client.connect()
     client.send("Hello")
