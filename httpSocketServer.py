@@ -142,5 +142,4 @@ if __name__ == "__main__":
         print(str(server.receive(headers["Clientid"])))
         server.send(headers["Clientid"], "this is a response test")
 
-
     server = HttpSocketServer("0.0.0.0", 1082, new_client)
