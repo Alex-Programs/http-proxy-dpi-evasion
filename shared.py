@@ -1,7 +1,6 @@
-import base64
 import json
 from base64 import b64decode, b64encode
-
+from random import choice
 
 # this file is an abomination
 
@@ -40,3 +39,10 @@ def encrypt_and_encode_reply(data):
 
 def decrypt_and_decode_reply(data):
     return str_to_bytes(data)
+
+def gen_id():
+    out = ""
+    for i in range(1, 8):
+        out += str(choice(range(100000, 999999))) + ":"
+
+    return out[:-2]
