@@ -21,6 +21,8 @@ Hello world!""".encode("utf8")
 
             conn, addr = s.accept()
 
+            conn.recv(1024)
+
             conn.send(respData)
             conn.send(respData)
 
